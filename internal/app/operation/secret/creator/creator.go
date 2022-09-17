@@ -44,5 +44,7 @@ func (c *Creator) Create(secretVal string) (*entity.Secret, error) {
 		return &entity.Secret{}, err
 	}
 
+	log.Info().Msgf("[SecretCreator] secret with key %s was created", secretKey)
+
 	return secret, nil
 }

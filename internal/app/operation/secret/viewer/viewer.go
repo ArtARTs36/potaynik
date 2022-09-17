@@ -2,6 +2,7 @@ package viewer
 
 import (
 	"github.com/artarts36/potaynik/internal/app/entity"
+	"github.com/rs/zerolog/log"
 )
 
 type Viewer struct {
@@ -18,13 +19,21 @@ func New(repository Repository) *Viewer {
 }
 
 func (v *Viewer) View(secretKey string) (string, error) {
+	log.Info().Msgf("[SecretViewer] finding secret with key %s", secretKey)
+
 	secret, _ := v.secrets.Find(secretKey)
 
 	if secret == nil {
+		log.Info().Msgf("[SecretViewer] secret with key %s not found", secretKey)
+
 		return "", newSecretNotFoundError(secretKey)
 	}
 
+	log.Info().Msgf("[SecretViewer] finding secret with key %s found", secretKey)
+
 	v.secrets.Delete(secretKey)
+
+	log.Info().Msgf("[SecretViewer] finding secret with key %s deleted", secretKey)
 
 	return secret.Value, nil
 }
