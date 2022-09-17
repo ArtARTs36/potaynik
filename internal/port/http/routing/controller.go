@@ -25,11 +25,19 @@ func NewControllerWithRouter(router *Router) *Controller {
 }
 
 func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Request) {
+	var rootLogCtx zerolog.Context
+
 	log.Logger.UpdateContext(func(c zerolog.Context) zerolog.Context {
+		rootLogCtx = c
+
 		return c.Str("user_request_id", uuid.New().String())
 	})
 
 	c.router.Find(request.RequestURI, request.Method)(writer, request)
+
+	log.Logger.UpdateContext(func(c zerolog.Context) zerolog.Context {
+		return rootLogCtx
+	})
 }
 
 func (c *Controller) Serve() {
