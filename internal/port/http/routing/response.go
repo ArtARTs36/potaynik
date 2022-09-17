@@ -1,6 +1,9 @@
 package routing
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 type Response struct {
 	Code    int
@@ -8,12 +11,16 @@ type Response struct {
 	Headers map[string]string
 }
 
+type errorMessage struct {
+	Error string `json:"error"`
+}
+
 func NewNotFoundResponse(message string) Response {
-	return Response{Code: http.StatusNotFound, Message: []byte(message), Headers: map[string]string{}}
+	return Response{Code: http.StatusNotFound, Message: newErrorResponseMessage(message), Headers: map[string]string{}}
 }
 
 func NewInvalidEntityResponse(message string) Response {
-	return Response{Code: http.StatusUnprocessableEntity, Message: []byte(message), Headers: map[string]string{}}
+	return Response{Code: http.StatusUnprocessableEntity, Message: newErrorResponseMessage(message), Headers: map[string]string{}}
 }
 
 func NewCreatedResponse(message []byte) Response {
@@ -22,4 +29,10 @@ func NewCreatedResponse(message []byte) Response {
 
 func NewOKResponse(message []byte) Response {
 	return Response{Code: http.StatusOK, Message: message, Headers: map[string]string{}}
+}
+
+func newErrorResponseMessage(message string) []byte {
+	jsonMsg, _ := json.Marshal(errorMessage{Error: message})
+
+	return jsonMsg
 }
