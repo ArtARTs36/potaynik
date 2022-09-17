@@ -19,6 +19,14 @@ func (r *Router) Add(uri string, method string, handler httpHandler) *Router {
 
 	r.routes[uri][method] = handler
 
+	if _, exists := r.routes[uri]["OPTIONS"]; !exists {
+		uriRoutes := r.routes[uri]
+
+		optsHandler := &OptionsHandler{routes: &uriRoutes}
+
+		r.routes[uri]["OPTIONS"] = optsHandler.Handle
+	}
+
 	return r
 }
 
