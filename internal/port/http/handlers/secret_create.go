@@ -25,9 +25,9 @@ func NewSecretCreateHandler(creator *creator.Creator) *SecretCreateHandler {
 func (h *SecretCreateHandler) Handle(r routing.Request) routing.Response {
 	var params SecretCreateParams
 
-	json.NewDecoder(r.Request.Body).Decode(&params)
+	err := r.DecodeBody(&params)
 
-	if params.Value == "" {
+	if err != nil || params.Value == "" {
 		return routing.NewInvalidEntityResponse("Invalid value")
 	}
 

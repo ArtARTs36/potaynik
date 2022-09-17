@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+
 	"github.com/artarts36/potaynik/internal/app/operation/secret/viewer"
 	"github.com/artarts36/potaynik/internal/port/http/routing"
 )
@@ -25,7 +26,11 @@ func NewSecretShowHandler(viewer *viewer.Viewer) *SecretShowHandler {
 func (h *SecretShowHandler) Handle(r routing.Request) routing.Response {
 	var params SecretShowParams
 
-	json.NewDecoder(r.Request.Body).Decode(&params)
+	err := r.DecodeBody(&params)
+
+	if err != nil || params.SecretKey == "" {
+		return routing.NewInvalidEntityResponse("invalid secret key")
+	}
 
 	val, err := h.viewer.View(params.SecretKey)
 

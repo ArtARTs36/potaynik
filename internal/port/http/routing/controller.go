@@ -35,12 +35,14 @@ func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Req
 		return c.Str("user_request_id", uuid.New().String())
 	})
 
-	resp := c.router.Find(request.RequestURI, request.Method)(Request{
-		Request: request,
-	})
+	resp := c.router.Find(request.RequestURI, request.Method)(NewRequest(request))
 
 	writer.WriteHeader(resp.Code)
-	writer.Write(resp.Message)
+	_, err := writer.Write(resp.Message)
+
+	if err != nil {
+		log.Error().Msgf("[Http][FrontController] Error on response writing: %v", err)
+	}
 
 	log.Logger.UpdateContext(func(c zerolog.Context) zerolog.Context {
 		return rootLogCtx
