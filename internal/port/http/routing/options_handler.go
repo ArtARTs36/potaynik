@@ -6,11 +6,11 @@ import (
 )
 
 type OptionsHandler struct {
-	routes      *map[string]httpHandler
+	routes      *map[string]HttpHandler
 	headerValue *string
 }
 
-func (h *OptionsHandler) Handle(w http.ResponseWriter, r *http.Request) {
+func (h *OptionsHandler) Handle(w http.ResponseWriter, _ *http.Request) {
 	h.retrieveHeaderValue()
 
 	w.Header().Set("Allow", *h.headerValue)

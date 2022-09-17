@@ -1,6 +1,8 @@
 package routing
 
 import (
+	"github.com/google/uuid"
+	"github.com/rs/zerolog"
 	"net/http"
 
 	"github.com/rs/zerolog/log"
@@ -23,19 +25,11 @@ func NewControllerWithRouter(router *Router) *Controller {
 }
 
 func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Request) {
-	handler := c.router.Find(request.RequestURI, request.Method)
+	log.Logger.UpdateContext(func(c zerolog.Context) zerolog.Context {
+		return c.Str("user_request_id", uuid.New().String())
+	})
 
-	if handler != nil {
-		handleFunc := *handler
-
-		handleFunc(writer, request)
-
-		return
-	}
-
-	log.Debug().Msgf("Route with uri %s not found", request.RequestURI)
-
-	writer.WriteHeader(404)
+	c.router.Find(request.RequestURI, request.Method)(writer, request)
 }
 
 func (c *Controller) Serve() {
