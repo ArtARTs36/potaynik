@@ -41,9 +41,15 @@ func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Req
 }
 
 func (c *Controller) Serve() {
-	http.HandleFunc("/", c.HandleRequest)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", c.HandleRequest)
 
-	err := http.ListenAndServe(":8080", nil)
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: mux,
+	}
+
+	err := server.ListenAndServe()
 
 	if err != nil {
 		log.Error().Msg(err.Error())
