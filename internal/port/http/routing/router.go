@@ -5,52 +5,50 @@ import "net/http"
 type HttpHandler func(http.ResponseWriter, *http.Request)
 
 type Router struct {
-	routes map[string]map[string]HttpHandler
+	handlers map[string]map[string]HttpHandler
 }
 
 func NewRouter() *Router {
-	return &Router{routes: map[string]map[string]HttpHandler{}}
+	return &Router{handlers: map[string]map[string]HttpHandler{}}
 }
 
 func (r *Router) Add(uri string, method string, handler HttpHandler) *Router {
-	if _, exists := r.routes[uri]; !exists {
-		r.routes[uri] = map[string]HttpHandler{}
+	if _, exists := r.handlers[uri]; !exists {
+		r.handlers[uri] = map[string]HttpHandler{}
 	}
 
-	r.routes[uri][method] = handler
+	r.handlers[uri][method] = handler
 	r.addOptionsRoute(uri)
 
 	return r
 }
 
 func (r *Router) Find(uri string, method string) HttpHandler {
-	uriRoutes, exists := r.routes[uri]
+	uriHandlers, exists := r.handlers[uri]
 
 	if !exists {
 		return handleNotFound
 	}
 
-	route, exists := uriRoutes[method]
+	handler, exists := uriHandlers[method]
 
 	if exists {
-		return route
+		return handler
 	}
 
-	handler := MethodNotAllowedHandler{
-		routes: &uriRoutes,
-	}
+	methodNotAllowedHandler := newMethodNotAllowedHandler(uriHandlers)
 
-	return handler.Handle
+	return methodNotAllowedHandler.Handle
 }
 
 func (r *Router) addOptionsRoute(uri string) {
-	if _, exists := r.routes[uri]["OPTIONS"]; exists {
+	if _, exists := r.handlers[uri]["OPTIONS"]; exists {
 		return
 	}
 
-	uriRoutes := r.routes[uri]
+	uriRoutes := r.handlers[uri]
 
 	optsHandler := &OptionsHandler{routes: &uriRoutes}
 
-	r.routes[uri]["OPTIONS"] = optsHandler.Handle
+	r.handlers[uri]["OPTIONS"] = optsHandler.Handle
 }

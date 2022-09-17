@@ -6,7 +6,11 @@ import (
 )
 
 type MethodNotAllowedHandler struct {
-	routes *map[string]HttpHandler
+	routes map[string]HttpHandler
+}
+
+func newMethodNotAllowedHandler(routes map[string]HttpHandler) MethodNotAllowedHandler {
+	return MethodNotAllowedHandler{routes: routes}
 }
 
 func (h *MethodNotAllowedHandler) Handle(w http.ResponseWriter, _ *http.Request) {
@@ -15,9 +19,9 @@ func (h *MethodNotAllowedHandler) Handle(w http.ResponseWriter, _ *http.Request)
 }
 
 func (h *MethodNotAllowedHandler) buildHeaderValue() string {
-	methods := make([]string, 0, len(*h.routes))
+	methods := make([]string, 0, len(h.routes))
 
-	for method, _ := range *h.routes {
+	for method, _ := range h.routes {
 		methods = append(methods, method)
 	}
 
