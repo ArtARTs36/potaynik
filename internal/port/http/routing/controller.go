@@ -35,7 +35,12 @@ func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Req
 		return c.Str("user_request_id", uuid.New().String())
 	})
 
-	c.router.Find(request.RequestURI, request.Method)(writer, request)
+	resp := c.router.Find(request.RequestURI, request.Method)(Request{
+		Request: request,
+	})
+
+	writer.WriteHeader(resp.Code)
+	writer.Write(resp.Message)
 
 	log.Logger.UpdateContext(func(c zerolog.Context) zerolog.Context {
 		return rootLogCtx
@@ -61,6 +66,7 @@ func (c *Controller) Serve() error {
 		err := server.ListenAndServe()
 		if errors.Is(err, http.ErrServerClosed) {
 			log.Info().Msg("http server closed")
+
 			return
 		}
 

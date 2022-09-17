@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/viewer"
-	"net/http"
+	"github.com/artarts36/potaynik/internal/port/http/routing"
 )
 
 type SecretShowHandler struct {
@@ -22,31 +22,22 @@ func NewSecretShowHandler(viewer *viewer.Viewer) *SecretShowHandler {
 	return &SecretShowHandler{viewer}
 }
 
-func (h *SecretShowHandler) Handle(w http.ResponseWriter, r *http.Request) {
+func (h *SecretShowHandler) Handle(r routing.Request) routing.Response {
 	var params SecretShowParams
 
-	json.NewDecoder(r.Body).Decode(&params)
+	json.NewDecoder(r.Request.Body).Decode(&params)
 
 	val, err := h.viewer.View(params.SecretKey)
 
 	notFoundErr, isNotFoundErr := err.(*viewer.SecretNotFoundError)
 
 	if isNotFoundErr {
-		resp, _ := json.Marshal(&ErrorResponse{
-			Error: notFoundErr.Error(),
-		})
-
-		w.WriteHeader(404)
-		w.Write(resp)
-
-		return
+		return routing.NewNotFoundResponse(notFoundErr.Error())
 	}
 
-	if val != nil {
-		resp, _ := json.Marshal(&SecretShowResponse{
-			Value: *val,
-		})
+	resp, _ := json.Marshal(&SecretShowResponse{
+		Value: val,
+	})
 
-		w.Write(resp)
-	}
+	return routing.NewOKResponse(resp)
 }

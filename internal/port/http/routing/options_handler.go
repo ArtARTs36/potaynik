@@ -6,15 +6,19 @@ import (
 )
 
 type OptionsHandler struct {
-	routes      *map[string]HttpHandler
+	routes      *map[string]Handler
 	headerValue *string
 }
 
-func (h *OptionsHandler) Handle(w http.ResponseWriter, _ *http.Request) {
+func (h *OptionsHandler) Handle(_ Request) Response {
 	h.retrieveHeaderValue()
 
-	w.Header().Set("Allow", *h.headerValue)
-	w.WriteHeader(http.StatusNoContent)
+	return Response{
+		Code: http.StatusNoContent,
+		Headers: map[string]string{
+			"Allow": *h.headerValue,
+		},
+	}
 }
 
 func (h *OptionsHandler) retrieveHeaderValue() {

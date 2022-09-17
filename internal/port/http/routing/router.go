@@ -1,20 +1,16 @@
 package routing
 
-import "net/http"
-
-type HttpHandler func(http.ResponseWriter, *http.Request)
-
 type Router struct {
-	handlers map[string]map[string]HttpHandler
+	handlers map[string]map[string]Handler
 }
 
 func NewRouter() *Router {
-	return &Router{handlers: map[string]map[string]HttpHandler{}}
+	return &Router{handlers: map[string]map[string]Handler{}}
 }
 
-func (r *Router) Add(uri string, method string, handler HttpHandler) *Router {
+func (r *Router) Add(uri string, method string, handler Handler) *Router {
 	if _, exists := r.handlers[uri]; !exists {
-		r.handlers[uri] = map[string]HttpHandler{}
+		r.handlers[uri] = map[string]Handler{}
 	}
 
 	r.handlers[uri][method] = handler
@@ -23,7 +19,7 @@ func (r *Router) Add(uri string, method string, handler HttpHandler) *Router {
 	return r
 }
 
-func (r *Router) Find(uri string, method string) HttpHandler {
+func (r *Router) Find(uri string, method string) Handler {
 	uriHandlers, exists := r.handlers[uri]
 
 	if !exists {

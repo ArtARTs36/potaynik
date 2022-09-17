@@ -3,8 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/creator"
-	"github.com/rs/zerolog/log"
-	"net/http"
+	"github.com/artarts36/potaynik/internal/port/http/routing"
 )
 
 type SecretCreateHandler struct {
@@ -23,17 +22,13 @@ func NewSecretCreateHandler(creator *creator.Creator) *SecretCreateHandler {
 	return &SecretCreateHandler{creator: creator}
 }
 
-func (h *SecretCreateHandler) Handle(w http.ResponseWriter, r *http.Request) {
+func (h *SecretCreateHandler) Handle(r routing.Request) routing.Response {
 	var params SecretCreateParams
 
-	log.Ctx(r.Context())
-
-	json.NewDecoder(r.Body).Decode(&params)
+	json.NewDecoder(r.Request.Body).Decode(&params)
 
 	if params.Value == "" {
-		w.WriteHeader(422)
-
-		return
+		return routing.NewInvalidEntityResponse("Invalid value")
 	}
 
 	sec, _ := h.creator.Create(params.Value)
@@ -44,6 +39,5 @@ func (h *SecretCreateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	respJSON, _ := json.Marshal(resp)
 
-	w.Write(respJSON)
-	w.WriteHeader(200)
+	return routing.NewCreatedResponse(respJSON)
 }

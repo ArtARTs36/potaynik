@@ -6,16 +6,20 @@ import (
 )
 
 type MethodNotAllowedHandler struct {
-	routes map[string]HttpHandler
+	routes map[string]Handler
 }
 
-func newMethodNotAllowedHandler(routes map[string]HttpHandler) MethodNotAllowedHandler {
+func newMethodNotAllowedHandler(routes map[string]Handler) MethodNotAllowedHandler {
 	return MethodNotAllowedHandler{routes: routes}
 }
 
-func (h *MethodNotAllowedHandler) Handle(w http.ResponseWriter, _ *http.Request) {
-	w.Header().Set("Allow", h.buildHeaderValue())
-	w.WriteHeader(http.StatusMethodNotAllowed)
+func (h *MethodNotAllowedHandler) Handle(_ Request) Response {
+	return Response{
+		Code: http.StatusMethodNotAllowed,
+		Headers: map[string]string{
+			"Allow": h.buildHeaderValue(),
+		},
+	}
 }
 
 func (h *MethodNotAllowedHandler) buildHeaderValue() string {

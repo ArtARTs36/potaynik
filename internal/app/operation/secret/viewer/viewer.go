@@ -17,14 +17,14 @@ func New(repository Repository) *Viewer {
 	return &Viewer{secrets: repository}
 }
 
-func (v *Viewer) View(secretKey string) (*string, error) {
+func (v *Viewer) View(secretKey string) (string, error) {
 	secret, _ := v.secrets.Find(secretKey)
 
 	if secret == nil {
-		return nil, newSecretNotFoundError(secretKey)
+		return "", newSecretNotFoundError(secretKey)
 	}
 
 	v.secrets.Delete(secretKey)
 
-	return &secret.Value, nil
+	return secret.Value, nil
 }
