@@ -1,6 +1,8 @@
 package routing
 
 import (
+	"context"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"net/http"
@@ -40,7 +42,9 @@ func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Req
 	})
 }
 
-func (c *Controller) Serve() {
+func (c *Controller) Serve() error {
+	ctx := context.Background()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", c.HandleRequest)
 
@@ -49,9 +53,24 @@ func (c *Controller) Serve() {
 		Handler: mux,
 	}
 
-	err := server.ListenAndServe()
+	chErr := make(chan error)
 
-	if err != nil {
-		log.Error().Msg(err.Error())
+	go func() {
+		log.Info().Msgf("Start listening on '%s'", server.Addr)
+
+		err := server.ListenAndServe()
+		if errors.Is(err, http.ErrServerClosed) {
+			log.Info().Msg("http server closed")
+			return
+		}
+
+		chErr <- err
+	}()
+
+	select {
+	case err := <-chErr:
+		return err
+	case <-ctx.Done():
+		return server.Shutdown(ctx)
 	}
 }
