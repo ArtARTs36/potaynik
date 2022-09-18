@@ -37,6 +37,7 @@ func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Req
 
 	resp := c.router.Find(request.URL.Path, request.Method)(NewRequest(request))
 
+	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(resp.Code)
 	_, err := writer.Write(resp.Message)
 
