@@ -9,6 +9,8 @@ import (
 	"sync"
 )
 
+type serverRunner func(application *app.Application) error
+
 func main() {
 	application, err := app.NewApplication("potaynik")
 
@@ -16,44 +18,49 @@ func main() {
 		panic(fmt.Sprintf("cant build application: %s", err))
 	}
 
+	servers := []serverRunner{
+		runApplicationServer,
+		runHealthServer,
+	}
+
 	wg := new(sync.WaitGroup)
 
-	wg.Add(2)
+	for _, server := range servers {
+		wg.Add(1)
 
-	go func() {
-		err = routing.
-			NewController(func(router *routing.Router) {
-				router.
-					Add("/api/secrets", "POST", application.Services.Http.Handlers.SecretCreateHandler.Handle).
-					Add("/api/secrets", "GET", application.Services.Http.Handlers.SecretShowHandler.Handle)
-			}).
-			Serve(application.Environment.Http.Public.Port)
+		server := server
 
-		if err != nil {
-			log.Error().Msg(err.Error())
-		}
+		go func() {
+			err := server(application)
 
-		wg.Done()
-	}()
-
-	go func() {
-		err = routing.
-			NewController(func(router *routing.Router) {
-				router.
-					AddGoHandler("/metrics", "GET", promhttp.HandlerFor(
-						application.Metrics.Registry,
-						promhttp.HandlerOpts{
-							EnableOpenMetrics: true,
-						}).ServeHTTP)
-			}).
-			Serve(application.Environment.Http.Health.Port)
-
-		if err != nil {
-			log.Error().Msg(err.Error())
-		}
-
-		wg.Done()
-	}()
+			if err != nil {
+				log.Error().Msg(err.Error())
+			}
+		}()
+	}
 
 	wg.Wait()
+}
+
+func runApplicationServer(application *app.Application) error {
+	return routing.
+		NewController(func(router *routing.Router) {
+			router.
+				Add("/api/secrets", "POST", application.Services.Http.Handlers.SecretCreateHandler.Handle).
+				Add("/api/secrets", "GET", application.Services.Http.Handlers.SecretShowHandler.Handle)
+		}).
+		Serve(application.Environment.Http.Public.Port)
+}
+
+func runHealthServer(application *app.Application) error {
+	return routing.
+		NewController(func(router *routing.Router) {
+			router.
+				AddGoHandler("/metrics", "GET", promhttp.HandlerFor(
+					application.Metrics.Registry,
+					promhttp.HandlerOpts{
+						EnableOpenMetrics: true,
+					}).ServeHTTP)
+		}).
+		Serve(application.Environment.Http.Health.Port)
 }
