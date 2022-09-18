@@ -37,11 +37,15 @@ func (h *SecretCreateHandler) Handle(r routing.Request) routing.Response {
 		return routing.NewInvalidEntityResponse("Invalid TTL")
 	}
 
-	sec, _ := h.creator.Create(creator.SecretCreateParams{
+	sec, err := h.creator.Create(creator.SecretCreateParams{
 		Value:       params.Value,
 		TTL:         params.TTL,
 		AuthFactors: params.AuthFactors,
 	})
+
+	if err != nil {
+		return routing.NewInvalidEntityResponse(err.Error())
+	}
 
 	resp := SecretCreateResponse{
 		Key: sec.Key,

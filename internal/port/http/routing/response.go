@@ -15,6 +15,10 @@ type errorMessage struct {
 	Error string `json:"error"`
 }
 
+func NewForbiddenResponseWithText(message string) Response {
+	return Response{Code: http.StatusForbidden, Message: newErrorResponseMessage(message)}
+}
+
 func NewNotFoundResponse(message string) Response {
 	return Response{Code: http.StatusNotFound, Message: newErrorResponseMessage(message), Headers: map[string]string{}}
 }

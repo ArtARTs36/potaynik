@@ -45,7 +45,7 @@ func (v *Viewer) View(secretKey string, authFactors map[string]string) (string, 
 	if !access.Access {
 		log.Info().Msgf("[SecretViewer] user cant show secret with key %s", secretKey)
 
-		return "", nil
+		return "", newSecretViewForbiddenError(secretKey, access.Reason)
 	}
 
 	log.Info().Msgf("[SecretViewer] user can show secret with key %s", secretKey)

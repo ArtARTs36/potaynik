@@ -44,6 +44,12 @@ func (h *SecretShowHandler) Handle(r routing.Request) routing.Response {
 		return routing.NewNotFoundResponse(notFoundErr.Error())
 	}
 
+	forbiddenErr, isForbiddenErr := err.(*viewer.SecretViewForbiddenError)
+
+	if isForbiddenErr {
+		return routing.NewForbiddenResponseWithText(forbiddenErr.Reason)
+	}
+
 	resp, _ := json.Marshal(&SecretShowResponse{
 		Value: val,
 	})

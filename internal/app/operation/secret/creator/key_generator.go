@@ -6,5 +6,6 @@ type KeyGenerator struct {
 }
 
 func (g *KeyGenerator) Generate() string {
+	return "1"
 	return uuid.New().String()
 }
