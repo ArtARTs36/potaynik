@@ -13,22 +13,24 @@ type Creator struct {
 	secrets      SecretRepository
 }
 
+type SecretCreateParams struct {
+	Value       string
+	TTL         int
+	AuthFactors map[string]interface{}
+}
+
 func NewCreator(secrets SecretRepository) *Creator {
 	return &Creator{secrets: secrets, keyGenerator: &KeyGenerator{}}
 }
 
-type SecretRepository interface {
-	Add(secret *entity.Secret) error
-}
-
-func (c *Creator) Create(secretVal string) (*entity.Secret, error) {
+func (c *Creator) Create(params SecretCreateParams) (*entity.Secret, error) {
 	secretKey := c.keyGenerator.Generate()
 
 	log.Info().Msgf("[SecretCreator] try to creating new secret with key %s", secretKey)
 
 	secret := &entity.Secret{
 		Key:   c.keyGenerator.Generate(),
-		Value: secretVal,
+		Value: params.Value,
 	}
 
 	err := c.secrets.Add(secret)

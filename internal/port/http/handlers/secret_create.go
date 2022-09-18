@@ -11,7 +11,9 @@ type SecretCreateHandler struct {
 }
 
 type SecretCreateParams struct {
-	Value string `json:"value"`
+	Value       string `json:"value"`
+	TTL         int    `json:"ttl"`
+	AuthFactors map[string]interface{}
 }
 
 type SecretCreateResponse struct {
@@ -31,7 +33,15 @@ func (h *SecretCreateHandler) Handle(r routing.Request) routing.Response {
 		return routing.NewInvalidEntityResponse("Invalid value")
 	}
 
-	sec, _ := h.creator.Create(params.Value)
+	if params.TTL == 0 {
+		return routing.NewInvalidEntityResponse("Invalid TTL")
+	}
+
+	sec, _ := h.creator.Create(creator.SecretCreateParams{
+		Value:       params.Value,
+		TTL:         params.TTL,
+		AuthFactors: params.AuthFactors,
+	})
 
 	resp := SecretCreateResponse{
 		Key: sec.Key,
