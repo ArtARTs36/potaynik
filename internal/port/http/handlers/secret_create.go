@@ -11,9 +11,9 @@ type SecretCreateHandler struct {
 }
 
 type SecretCreateParams struct {
-	Value       string `json:"value"`
-	TTL         int    `json:"ttl"`
-	AuthFactors map[string]interface{}
+	Value       string                            `json:"value"`
+	TTL         int                               `json:"ttl"`
+	AuthFactors map[string]map[string]interface{} `json:"auth_factors"`
 }
 
 type SecretCreateResponse struct {
