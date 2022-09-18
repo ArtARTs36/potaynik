@@ -6,10 +6,10 @@ import (
 )
 
 type MethodNotAllowedHandler struct {
-	routes map[string]Handler
+	routes map[string]GoHttpHandler
 }
 
-func newMethodNotAllowedHandler(routes map[string]Handler) MethodNotAllowedHandler {
+func newMethodNotAllowedHandler(routes map[string]GoHttpHandler) MethodNotAllowedHandler {
 	return MethodNotAllowedHandler{routes: routes}
 }
 

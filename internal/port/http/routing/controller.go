@@ -36,15 +36,7 @@ func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Req
 		return c.Str("user_request_id", uuid.New().String())
 	})
 
-	resp := c.router.Find(request.URL.Path, request.Method)(NewRequest(request))
-
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(resp.Code)
-	_, err := writer.Write(resp.Message)
-
-	if err != nil {
-		log.Error().Msgf("[Http][FrontController] Error on response writing: %v", err)
-	}
+	c.router.Find(request.URL.Path, request.Method)(writer, request)
 
 	log.Logger.UpdateContext(func(c zerolog.Context) zerolog.Context {
 		return rootLogCtx

@@ -6,7 +6,7 @@ import (
 )
 
 type OptionsHandler struct {
-	routes      *map[string]Handler
+	routes      *map[string]GoHttpHandler
 	headerValue *string
 }
 

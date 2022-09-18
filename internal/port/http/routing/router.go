@@ -1,29 +1,29 @@
 package routing
 
 type Router struct {
-	handlers map[string]map[string]Handler
+	handlers map[string]map[string]GoHttpHandler
 }
 
 func NewRouter() *Router {
-	return &Router{handlers: map[string]map[string]Handler{}}
+	return &Router{handlers: map[string]map[string]GoHttpHandler{}}
 }
 
 func (r *Router) Add(uri string, method string, handler Handler) *Router {
 	if _, exists := r.handlers[uri]; !exists {
-		r.handlers[uri] = map[string]Handler{}
+		r.handlers[uri] = map[string]GoHttpHandler{}
 	}
 
-	r.handlers[uri][method] = handler
+	r.handlers[uri][method] = WrapHandler(handler)
 	r.addOptionsRoute(uri)
 
 	return r
 }
 
-func (r *Router) Find(uri string, method string) Handler {
+func (r *Router) Find(uri string, method string) GoHttpHandler {
 	uriHandlers, exists := r.handlers[uri]
 
 	if !exists {
-		return handleNotFound
+		return WrapHandler(handleNotFound)
 	}
 
 	handler, exists := uriHandlers[method]
@@ -34,7 +34,7 @@ func (r *Router) Find(uri string, method string) Handler {
 
 	methodNotAllowedHandler := newMethodNotAllowedHandler(uriHandlers)
 
-	return methodNotAllowedHandler.Handle
+	return WrapHandler(methodNotAllowedHandler.Handle)
 }
 
 func (r *Router) addOptionsRoute(uri string) {
@@ -46,5 +46,5 @@ func (r *Router) addOptionsRoute(uri string) {
 
 	optsHandler := &OptionsHandler{routes: &uriRoutes}
 
-	r.handlers[uri]["OPTIONS"] = optsHandler.Handle
+	r.handlers[uri]["OPTIONS"] = WrapHandler(optsHandler.Handle)
 }
