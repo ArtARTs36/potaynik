@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-
 	"github.com/artarts36/potaynik/internal/app/operation/secret/viewer"
 	"github.com/artarts36/potaynik/internal/port/http/routing"
 )
@@ -12,7 +11,8 @@ type SecretShowHandler struct {
 }
 
 type SecretShowParams struct {
-	SecretKey string `query:"secret_key"`
+	SecretKey   string            `query:"secret_key"`
+	AuthFactors map[string]string `query:"auth_factors"`
 }
 
 type SecretShowResponse struct {
@@ -36,7 +36,7 @@ func (h *SecretShowHandler) Handle(r routing.Request) routing.Response {
 		return routing.NewInvalidEntityResponse("invalid secret key")
 	}
 
-	val, err := h.viewer.View(params.SecretKey)
+	val, err := h.viewer.View(params.SecretKey, params.AuthFactors)
 
 	notFoundErr, isNotFoundErr := err.(*viewer.SecretNotFoundError)
 

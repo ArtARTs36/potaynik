@@ -47,7 +47,7 @@ func NewApplication() *Application {
 
 	app.Services.Http.Handlers.SecretCreateHandler = handlers.NewSecretCreateHandler(app.Services.Operations.Secret.Creator)
 
-	app.Services.Operations.Secret.Viewer = viewer.New(app.Services.Repositories.SecretRepository)
+	app.Services.Operations.Secret.Viewer = viewer.New(app.Services.Repositories.SecretRepository, app.Services.Operations.Auth.Authorizers)
 	app.Services.Http.Handlers.SecretShowHandler = handlers.NewSecretShowHandler(app.Services.Operations.Secret.Viewer)
 
 	return app

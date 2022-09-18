@@ -15,5 +15,5 @@ type Access struct {
 type CreateAuthFactorParams map[string]interface{}
 
 type AuthorizeRequest struct {
-	Input map[string]interface{}
+	UserFactorValue string
 }

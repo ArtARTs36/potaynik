@@ -37,7 +37,7 @@ func (auth *PasswordAuthorizer) Authorize(factor entity.AuthFactor, req Authoriz
 		}, nil
 	}
 
-	userPswd, exists := req.Input[PasswordAuthorizerKey]
+	userPswd := req.UserFactorValue
 
 	if !exists {
 		return Access{
