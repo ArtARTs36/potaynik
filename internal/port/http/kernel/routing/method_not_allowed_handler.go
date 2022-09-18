@@ -1,6 +1,7 @@
 package routing
 
 import (
+	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 	"net/http"
 	"strings"
 )
@@ -13,8 +14,8 @@ func newMethodNotAllowedHandler(routes map[string]GoHttpHandler) MethodNotAllowe
 	return MethodNotAllowedHandler{routes: routes}
 }
 
-func (h *MethodNotAllowedHandler) Handle(_ Request) Response {
-	return Response{
+func (h *MethodNotAllowedHandler) Handle(_ Request) responses.Response {
+	return responses.Response{
 		Code: http.StatusMethodNotAllowed,
 		Headers: map[string]string{
 			"Allow": h.buildHeaderValue(),

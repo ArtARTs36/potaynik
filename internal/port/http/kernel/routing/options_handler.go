@@ -1,6 +1,7 @@
 package routing
 
 import (
+	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 	"net/http"
 	"strings"
 )
@@ -10,10 +11,10 @@ type OptionsHandler struct {
 	headerValue *string
 }
 
-func (h *OptionsHandler) Handle(_ Request) Response {
+func (h *OptionsHandler) Handle(_ Request) responses.Response {
 	h.retrieveHeaderValue()
 
-	return Response{
+	return responses.Response{
 		Code: http.StatusNoContent,
 		Headers: map[string]string{
 			"Allow": *h.headerValue,

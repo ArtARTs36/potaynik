@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/creator"
 	"github.com/artarts36/potaynik/internal/app/repository"
+	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 	"github.com/artarts36/potaynik/internal/port/http/kernel/routing"
 )
 
@@ -25,17 +26,17 @@ func NewSecretCreateHandler(creator *creator.Creator) *SecretCreateHandler {
 	return &SecretCreateHandler{creator: creator}
 }
 
-func (h *SecretCreateHandler) Handle(r routing.Request) routing.Response {
+func (h *SecretCreateHandler) Handle(r routing.Request) responses.Response {
 	var params SecretCreateParams
 
 	err := r.DecodeBody(&params)
 
 	if err != nil || params.Value == "" {
-		return routing.NewInvalidEntityResponse("Invalid value")
+		return responses.UnprocessableEntity("Invalid value")
 	}
 
 	if params.TTL == 0 {
-		return routing.NewInvalidEntityResponse("Invalid TTL")
+		return responses.UnprocessableEntity("Invalid TTL")
 	}
 
 	sec, err := h.creator.Create(creator.SecretCreateParams{
@@ -48,10 +49,10 @@ func (h *SecretCreateHandler) Handle(r routing.Request) routing.Response {
 		_, isAlreadyExistsErr := err.(*repository.SecretAlreadyExistsError)
 
 		if isAlreadyExistsErr {
-			return routing.NewAlreadyReportedResponse(err.Error())
+			return responses.AlreadyReported(err.Error())
 		}
 
-		return routing.NewInvalidEntityResponse(err.Error())
+		return responses.UnprocessableEntity(err.Error())
 	}
 
 	resp := SecretCreateResponse{
@@ -60,5 +61,5 @@ func (h *SecretCreateHandler) Handle(r routing.Request) routing.Response {
 
 	respJSON, _ := json.Marshal(resp)
 
-	return routing.NewCreatedResponse(respJSON)
+	return responses.Created(respJSON)
 }

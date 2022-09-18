@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/viewer"
+	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 	"github.com/artarts36/potaynik/internal/port/http/kernel/routing"
 )
 
@@ -23,17 +24,17 @@ func NewSecretShowHandler(viewer *viewer.Viewer) *SecretShowHandler {
 	return &SecretShowHandler{viewer}
 }
 
-func (h *SecretShowHandler) Handle(r routing.Request) routing.Response {
+func (h *SecretShowHandler) Handle(r routing.Request) responses.Response {
 	var params SecretShowParams
 
 	err := r.DecodeQuery(&params)
 
 	if err != nil {
-		return routing.NewInvalidEntityResponse("invalid data")
+		return responses.UnprocessableEntity("invalid data")
 	}
 
 	if params.SecretKey == "" {
-		return routing.NewInvalidEntityResponse("invalid secret key")
+		return responses.UnprocessableEntity("invalid secret key")
 	}
 
 	val, err := h.viewer.View(params.SecretKey, params.AuthFactors)
@@ -41,18 +42,18 @@ func (h *SecretShowHandler) Handle(r routing.Request) routing.Response {
 	notFoundErr, isNotFoundErr := err.(*viewer.SecretNotFoundError)
 
 	if isNotFoundErr {
-		return routing.NewNotFoundResponse(notFoundErr.Error())
+		return responses.NotFound(notFoundErr.Error())
 	}
 
 	forbiddenErr, isForbiddenErr := err.(*viewer.SecretViewForbiddenError)
 
 	if isForbiddenErr {
-		return routing.NewForbiddenResponseWithText(forbiddenErr.Reason)
+		return responses.Forbidden(forbiddenErr.Reason)
 	}
 
 	resp, _ := json.Marshal(&SecretShowResponse{
 		Value: val,
 	})
 
-	return routing.NewOKResponse(resp)
+	return responses.OK(resp)
 }

@@ -19,7 +19,7 @@ func (r *Router) AddGoHandler(uri string, method string, handler GoHttpHandler) 
 	return r
 }
 
-func (r *Router) Add(uri string, method string, handler Handler) *Router {
+func (r *Router) AddAppHandler(uri string, method string, handler AppHandler) *Router {
 	return r.AddGoHandler(uri, method, WrapHandler(handler))
 }
 

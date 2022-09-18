@@ -45,8 +45,8 @@ func main() {
 func runApplicationServer(application *app.Application) error {
 	return routing.NewController(func(router *routing.Router) {
 		router.
-			Add("/api/secrets", "POST", application.Services.Http.Handlers.SecretCreateHandler.Handle).
-			Add("/api/secrets", "GET", application.Services.Http.Handlers.SecretShowHandler.Handle)
+			AddAppHandler("/api/secrets", "POST", application.Services.Http.Handlers.SecretCreateHandler.Handle).
+			AddAppHandler("/api/secrets", "GET", application.Services.Http.Handlers.SecretShowHandler.Handle)
 	}).
 		Serve(application.Environment.Http.Public.Port)
 }
