@@ -35,7 +35,7 @@ func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Req
 		return c.Str("user_request_id", uuid.New().String())
 	})
 
-	resp := c.router.Find(request.RequestURI, request.Method)(NewRequest(request))
+	resp := c.router.Find(request.URL.Path, request.Method)(NewRequest(request))
 
 	writer.WriteHeader(resp.Code)
 	_, err := writer.Write(resp.Message)

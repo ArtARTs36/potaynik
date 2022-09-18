@@ -24,15 +24,13 @@ func NewSecretShowHandler(viewer *viewer.Viewer) *SecretShowHandler {
 }
 
 func (h *SecretShowHandler) Handle(r routing.Request) routing.Response {
-	var params SecretShowParams
+	secretKey := r.GetQueryParam("secret_key")
 
-	err := r.DecodeBody(&params)
-
-	if err != nil || params.SecretKey == "" {
+	if secretKey == "" {
 		return routing.NewInvalidEntityResponse("invalid secret key")
 	}
 
-	val, err := h.viewer.View(params.SecretKey)
+	val, err := h.viewer.View(secretKey)
 
 	notFoundErr, isNotFoundErr := err.(*viewer.SecretNotFoundError)
 

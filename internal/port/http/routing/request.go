@@ -20,3 +20,7 @@ func (r *Request) DecodeBody(str interface{}) error {
 func (r *Request) URI() string {
 	return r.request.RequestURI
 }
+
+func (r *Request) GetQueryParam(key string) string {
+	return r.request.URL.Query().Get(key)
+}
