@@ -6,6 +6,7 @@ import (
 	"github.com/artarts36/potaynik/internal/app/operation/secret/viewer"
 	"github.com/artarts36/potaynik/internal/app/repository"
 	"github.com/artarts36/potaynik/internal/port/http/handlers"
+	"github.com/vrischmann/envconfig"
 )
 
 type Application struct {
@@ -29,10 +30,23 @@ type Application struct {
 			}
 		}
 	}
+	Environment struct {
+		Http struct {
+			Public struct {
+				Port int
+			}
+		}
+	}
 }
 
-func NewApplication() *Application {
+func NewApplication(appName string) (*Application, error) {
 	app := &Application{}
+
+	err := envconfig.InitWithPrefix(&app.Environment, appName)
+
+	if err != nil {
+		return nil, err
+	}
 
 	app.Services.Repositories.SecretRepository = repository.NewMemorySecretRepository()
 
@@ -50,5 +64,5 @@ func NewApplication() *Application {
 	app.Services.Operations.Secret.Viewer = viewer.New(app.Services.Repositories.SecretRepository, app.Services.Operations.Auth.Authorizers)
 	app.Services.Http.Handlers.SecretShowHandler = handlers.NewSecretShowHandler(app.Services.Operations.Secret.Viewer)
 
-	return app
+	return app, nil
 }

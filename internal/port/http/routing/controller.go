@@ -3,6 +3,7 @@ package routing
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"net/http"
@@ -50,14 +51,14 @@ func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Req
 	})
 }
 
-func (c *Controller) Serve() error {
+func (c *Controller) Serve(port int) error {
 	ctx := context.Background()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", c.HandleRequest)
 
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf(":%d", port),
 		Handler: mux,
 	}
 
