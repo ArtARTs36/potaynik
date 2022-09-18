@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/creator"
+	"github.com/artarts36/potaynik/internal/app/repository"
 	"github.com/artarts36/potaynik/internal/port/http/routing"
 )
 
@@ -44,6 +45,12 @@ func (h *SecretCreateHandler) Handle(r routing.Request) routing.Response {
 	})
 
 	if err != nil {
+		_, isAlreadyExistsErr := err.(*repository.SecretAlreadyExistsError)
+
+		if isAlreadyExistsErr {
+			return routing.NewAlreadyReportedResponse(err.Error())
+		}
+
 		return routing.NewInvalidEntityResponse(err.Error())
 	}
 

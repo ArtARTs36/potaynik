@@ -23,6 +23,10 @@ func NewNotFoundResponse(message string) Response {
 	return Response{Code: http.StatusNotFound, Message: newErrorResponseMessage(message), Headers: map[string]string{}}
 }
 
+func NewAlreadyReportedResponse(message string) Response {
+	return Response{Code: http.StatusAlreadyReported, Message: newErrorResponseMessage(message), Headers: map[string]string{}}
+}
+
 func NewInvalidEntityResponse(message string) Response {
 	return Response{Code: http.StatusUnprocessableEntity, Message: newErrorResponseMessage(message), Headers: map[string]string{}}
 }
