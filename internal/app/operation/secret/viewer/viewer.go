@@ -21,7 +21,13 @@ func New(repository Repository) *Viewer {
 func (v *Viewer) View(secretKey string) (string, error) {
 	log.Info().Msgf("[SecretViewer] finding secret with key %s", secretKey)
 
-	secret, _ := v.secrets.Find(secretKey)
+	secret, err := v.secrets.Find(secretKey)
+
+	if err != nil {
+		log.Error().Msgf("[SecretViewer] fail on finding secret with key %s: %s", secretKey, err.Error())
+
+		return "", err
+	}
 
 	if secret == nil {
 		log.Info().Msgf("[SecretViewer] secret with key %s not found", secretKey)

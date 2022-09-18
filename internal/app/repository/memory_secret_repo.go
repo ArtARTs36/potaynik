@@ -28,10 +28,10 @@ func (repo *MemorySecretRepository) Find(secretKey string) (*entity.Secret, erro
 	secret, exists := repo.secrets[secretKey]
 
 	if exists {
-		return nil, nil
+		return secret, nil
 	}
 
-	return secret, nil
+	return nil, nil
 }
 
 func (repo *MemorySecretRepository) Delete(secretKey string) {
