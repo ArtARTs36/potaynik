@@ -69,6 +69,8 @@ func (c *Creator) Create(params SecretCreateParams) (*entity.Secret, error) {
 
 	log.Info().Msgf("[SecretCreator] secret with key %s was created", secretKey)
 
+	c.metrics.IncSecretCreateSuccessAttempts()
+
 	return secret, nil
 }
 
@@ -81,6 +83,8 @@ func (c *Creator) createAuthFactors(params SecretCreateParams) (map[string]entit
 		if !authorizerExists {
 			return factors, fmt.Errorf("[SecretCreator] authorizer with key %s not found", authorizer)
 		}
+
+		c.metrics.IncUseAuthFactor(authorizerKey)
 
 		factor, err := authorizer.CreateAuthFactor(factorData)
 
