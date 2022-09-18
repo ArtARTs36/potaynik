@@ -8,15 +8,19 @@ func NewRouter() *Router {
 	return &Router{handlers: map[string]map[string]GoHttpHandler{}}
 }
 
-func (r *Router) Add(uri string, method string, handler Handler) *Router {
+func (r *Router) AddGoHandler(uri string, method string, handler GoHttpHandler) *Router {
 	if _, exists := r.handlers[uri]; !exists {
 		r.handlers[uri] = map[string]GoHttpHandler{}
 	}
 
-	r.handlers[uri][method] = WrapHandler(handler)
+	r.handlers[uri][method] = handler
 	r.addOptionsRoute(uri)
 
 	return r
+}
+
+func (r *Router) Add(uri string, method string, handler Handler) *Router {
+	return r.AddGoHandler(uri, method, WrapHandler(handler))
 }
 
 func (r *Router) Find(uri string, method string) GoHttpHandler {

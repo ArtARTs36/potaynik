@@ -13,6 +13,7 @@ type Creator struct {
 	keyGenerator *KeyGenerator
 	secrets      SecretRepository
 	authorizers  map[string]auth.Authorizer
+	metrics      *Metrics
 }
 
 type SecretCreateParams struct {
@@ -21,11 +22,13 @@ type SecretCreateParams struct {
 	AuthFactors map[string]map[string]interface{}
 }
 
-func NewCreator(secrets SecretRepository, authorizers map[string]auth.Authorizer) *Creator {
-	return &Creator{secrets: secrets, keyGenerator: &KeyGenerator{}, authorizers: authorizers}
+func NewCreator(secrets SecretRepository, authorizers map[string]auth.Authorizer, metrics *Metrics) *Creator {
+	return &Creator{secrets: secrets, keyGenerator: &KeyGenerator{}, authorizers: authorizers, metrics: metrics}
 }
 
 func (c *Creator) Create(params SecretCreateParams) (*entity.Secret, error) {
+	c.metrics.IncSecretCreateAttempts()
+
 	secretKey := c.keyGenerator.Generate()
 
 	log.Info().Msgf("[SecretCreator] try to creating new secret with key %s", secretKey)
