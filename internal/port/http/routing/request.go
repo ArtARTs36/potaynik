@@ -3,6 +3,8 @@ package routing
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/hetiansu5/urlquery"
 )
 
 type Request struct {
@@ -23,4 +25,8 @@ func (r *Request) URI() string {
 
 func (r *Request) GetQueryParam(key string) string {
 	return r.request.URL.Query().Get(key)
+}
+
+func (r *Request) DecodeQuery(str interface{}) error {
+	return urlquery.Unmarshal([]byte(r.request.URL.RawQuery), &str)
 }

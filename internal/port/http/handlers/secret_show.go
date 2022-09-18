@@ -12,7 +12,7 @@ type SecretShowHandler struct {
 }
 
 type SecretShowParams struct {
-	SecretKey string `json:"secret_key"`
+	SecretKey string `query:"secret_key"`
 }
 
 type SecretShowResponse struct {
@@ -24,13 +24,19 @@ func NewSecretShowHandler(viewer *viewer.Viewer) *SecretShowHandler {
 }
 
 func (h *SecretShowHandler) Handle(r routing.Request) routing.Response {
-	secretKey := r.GetQueryParam("secret_key")
+	var params SecretShowParams
 
-	if secretKey == "" {
+	err := r.DecodeQuery(&params)
+
+	if err != nil {
+		return routing.NewInvalidEntityResponse("invalid data")
+	}
+
+	if params.SecretKey == "" {
 		return routing.NewInvalidEntityResponse("invalid secret key")
 	}
 
-	val, err := h.viewer.View(secretKey)
+	val, err := h.viewer.View(params.SecretKey)
 
 	notFoundErr, isNotFoundErr := err.(*viewer.SecretNotFoundError)
 

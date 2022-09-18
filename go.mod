@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/google/uuid v1.3.0
+	github.com/hetiansu5/urlquery v1.2.7
 	github.com/rs/zerolog v1.28.0
 )
 
