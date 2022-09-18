@@ -1,8 +1,9 @@
 package viewer
 
 import (
-	"github.com/artarts36/potaynik/internal/app/entity"
 	"github.com/rs/zerolog/log"
+
+	"github.com/artarts36/potaynik/internal/app/entity"
 )
 
 type Viewer struct {
@@ -39,7 +40,7 @@ func (v *Viewer) View(secretKey string) (string, error) {
 
 	v.secrets.Delete(secretKey)
 
-	log.Info().Msgf("[SecretViewer] finding secret with key %s deleted", secretKey)
+	log.Info().Msgf("[SecretViewer] secret with key %s deleted", secretKey)
 
 	return secret.Value, nil
 }

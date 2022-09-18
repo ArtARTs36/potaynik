@@ -31,6 +31,7 @@ func (c *Creator) Create(params SecretCreateParams) (*entity.Secret, error) {
 	secret := &entity.Secret{
 		Key:   c.keyGenerator.Generate(),
 		Value: params.Value,
+		TTL:   params.TTL,
 	}
 
 	err := c.secrets.Add(secret)
