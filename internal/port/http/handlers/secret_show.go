@@ -51,6 +51,10 @@ func (h *SecretShowHandler) Handle(r routing.Request) responses.Response {
 		return responses.Forbidden(forbiddenErr.Reason)
 	}
 
+	if err != nil {
+		return responses.ServerError(err.Error())
+	}
+
 	resp, _ := json.Marshal(&SecretShowResponse{
 		Value: val,
 	})

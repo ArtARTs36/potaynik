@@ -1,11 +1,13 @@
 package app
 
 import (
+	"fmt"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/auth"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/creator"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/viewer"
 	"github.com/artarts36/potaynik/internal/app/repository"
 	"github.com/artarts36/potaynik/internal/port/http/handlers"
+	"github.com/go-redis/redis/v8"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vrischmann/envconfig"
 )
@@ -20,7 +22,7 @@ type Application struct {
 			}
 		}
 		Repositories struct {
-			SecretRepository *repository.MemorySecretRepository
+			SecretRepository *repository.RedisSecretRepository
 		}
 		Operations struct {
 			Secret struct {
@@ -31,6 +33,7 @@ type Application struct {
 				Authorizers map[string]auth.Authorizer
 			}
 		}
+		Redis *redis.Client
 	}
 	Environment struct {
 		Http struct {
@@ -40,6 +43,9 @@ type Application struct {
 			Health struct {
 				Port int
 			}
+		}
+		Redis struct {
+			Addr string
 		}
 	}
 	Metrics struct {
@@ -61,8 +67,9 @@ func NewApplication(appName string) (*Application, error) {
 	}
 
 	app.registerMetrics()
+	app.connectRedis()
 
-	app.Services.Repositories.SecretRepository = repository.NewMemorySecretRepository()
+	app.Services.Repositories.SecretRepository = repository.NewRedisSecretRepository(app.Services.Redis, fmt.Sprintf("%s_", appName))
 
 	app.Services.Operations.Auth.Authorizers = map[string]auth.Authorizer{
 		auth.PasswordAuthorizerKey: &auth.PasswordAuthorizer{},
@@ -92,4 +99,10 @@ func (app *Application) registerMetrics() {
 
 func (app *Application) spawnMetrics() {
 	app.Metrics.Collectors.SecretCreatorMetrics = creator.NewMetrics(app.AppName)
+}
+
+func (app *Application) connectRedis() {
+	app.Services.Redis = redis.NewClient(&redis.Options{
+		Addr: app.Environment.Redis.Addr,
+	})
 }

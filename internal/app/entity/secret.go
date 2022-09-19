@@ -1,5 +1,10 @@
 package entity
 
+import (
+	"fmt"
+	"time"
+)
+
 type Secret struct {
 	Key         string                `json:"key"`
 	Value       string                `json:"value"`
@@ -9,4 +14,10 @@ type Secret struct {
 
 func (s *Secret) HasAuthFactors() bool {
 	return len(s.AuthFactors) > 0
+}
+
+func (s *Secret) Duration() time.Duration {
+	dur, _ := time.ParseDuration(fmt.Sprintf("%ss", s.TTL))
+
+	return dur
 }

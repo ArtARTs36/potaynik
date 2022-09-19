@@ -2,6 +2,10 @@ package responses
 
 import "net/http"
 
+func ServerError(message string) Response {
+	return Response{Code: http.StatusInternalServerError, Message: newErrorResponseMessage(message)}
+}
+
 func Forbidden(message string) Response {
 	return Response{Code: http.StatusForbidden, Message: newErrorResponseMessage(message)}
 }
