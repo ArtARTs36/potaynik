@@ -1,0 +1,33 @@
+version: '3.2'
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy:1.0.1
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx/certs/:/etc/nginx/certs
+    networks:
+      - potaynik-net
+
+  potaynik-backend:
+    env_file:
+      - "${PWD}/build/.env"
+    build:
+      dockerfile: ./build/dev/backend/Dockerfile
+      context: "${PWD}"
+    environment:
+      - VIRTUAL_HOST=api.potaynik.ru
+    volumes:
+      - "${PWD}:/go/src/github.com/artarts36/potaynik/"
+    entrypoint: "go run /go/src/github.com/artarts36/potaynik/cmd/main.go"
+    networks:
+      - potaynik-net
+    expose:
+      - "${POTAYNIK_HTTP_PUBLIC_PORT}"
+      - "${POTAYNIK_HTTP_HEALTH_PORT}"
+
+networks:
+  potaynik-net:
+    external: true
