@@ -50,10 +50,14 @@ func (v *Viewer) View(secretKey string, authFactors map[string]string) (string, 
 	access := v.authorize(secret, authFactors)
 
 	if !access.Access {
+		v.metrics.IncAccessFail()
+
 		log.Info().Msgf("[SecretViewer] user cant show secret with key %s", secretKey)
 
 		return "", newSecretViewForbiddenError(secretKey, access.Reason)
 	}
+
+	v.metrics.IncAccessFail()
 
 	log.Info().Msgf("[SecretViewer] user can show secret with key %s", secretKey)
 

@@ -8,6 +8,7 @@ type Metrics struct {
 	secretNotFound    prometheus.Counter
 	secretFound       prometheus.Counter
 	authPass          *prometheus.CounterVec
+	access            *prometheus.CounterVec
 }
 
 func NewMetrics(appName string) *Metrics {
@@ -37,6 +38,11 @@ func NewMetrics(appName string) *Metrics {
 			Help:      "SecretViewer: Auth Pass",
 			Namespace: appName,
 		}, []string{"factor", "pass"}),
+		access: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Name:      "viewer_view_access",
+			Help:      "SecretViewer: Access",
+			Namespace: appName,
+		}, []string{"state"}),
 	}
 }
 
@@ -64,6 +70,14 @@ func (m *Metrics) IncAuthPassFail(factor string) {
 	m.authPass.WithLabelValues(factor, "false")
 }
 
+func (m *Metrics) IncAccessOk() {
+	m.access.WithLabelValues("true")
+}
+
+func (m *Metrics) IncAccessFail() {
+	m.access.WithLabelValues("false")
+}
+
 func (m *Metrics) Collectors() []prometheus.Collector {
 	return []prometheus.Collector{
 		m.viewTotalAttempts,
@@ -71,5 +85,6 @@ func (m *Metrics) Collectors() []prometheus.Collector {
 		m.secretNotFound,
 		m.secretFound,
 		m.authPass,
+		m.access,
 	}
 }
