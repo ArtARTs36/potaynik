@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/artarts36/potaynik/internal/app/operation/health"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/informer"
 
 	"github.com/go-redis/redis/v8"
@@ -23,6 +24,7 @@ type Application struct {
 				SecretCreateHandler *handlers.SecretCreateHandler
 				SecretShowHandler   *handlers.SecretShowHandler
 				SecretInfoHandler   *handlers.SecretInfoHandler
+				HealthCheckHandler  *handlers.HealthCheckHandler
 			}
 		}
 		Repositories struct {
@@ -38,7 +40,8 @@ type Application struct {
 				Authorizers map[string]auth.Authorizer
 			}
 		}
-		Redis *redis.Client
+		HealthCheckers []health.Checker
+		Redis          *redis.Client
 	}
 	Environment struct {
 		Http struct {
@@ -101,6 +104,8 @@ func NewApplication(appName string) (*Application, error) {
 
 	app.Services.Http.Handlers.SecretInfoHandler = handlers.NewSecretInfoHandler(app.Services.Operations.Secret.Informer)
 
+	app.Services.Http.Handlers.HealthCheckHandler = handlers.NewHealthCheckHandler(app.Services.HealthCheckers)
+
 	return app, nil
 }
 
@@ -122,4 +127,6 @@ func (app *Application) connectRedis() {
 	app.Services.Redis = redis.NewClient(&redis.Options{
 		Addr: app.Environment.Redis.Addr,
 	})
+
+	app.Services.HealthCheckers = append(app.Services.HealthCheckers, health.NewRedisChecker(app.Services.Redis))
 }

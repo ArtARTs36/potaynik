@@ -1,6 +1,7 @@
 package routing
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -29,4 +30,8 @@ func (r *Request) GetQueryParam(key string) string {
 
 func (r *Request) DecodeQuery(str interface{}) error {
 	return urlquery.Unmarshal([]byte(r.request.URL.RawQuery), &str)
+}
+
+func (r *Request) Context() context.Context {
+	return r.request.Context()
 }

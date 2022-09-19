@@ -3,7 +3,11 @@ package responses
 import "net/http"
 
 func ServerError(message string) Response {
-	return Response{Code: http.StatusInternalServerError, Message: newErrorResponseMessage(message)}
+	return ServerErrorFromBytes(newErrorResponseMessage(message))
+}
+
+func ServerErrorFromBytes(message []byte) Response {
+	return Response{Code: http.StatusInternalServerError, Message: message}
 }
 
 func Forbidden(message string) Response {

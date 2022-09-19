@@ -59,7 +59,8 @@ func runHealthServer(application *app.Application) error {
 				application.Metrics.Registry,
 				promhttp.HandlerOpts{
 					EnableOpenMetrics: true,
-				}).ServeHTTP)
+				}).ServeHTTP).
+			AddAppHandler("/health/check", "GET", application.Services.Http.Handlers.HealthCheckHandler.Handle)
 	}).
 		Serve(application.Environment.Http.Health.Port)
 }
