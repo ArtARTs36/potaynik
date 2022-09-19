@@ -21,3 +21,13 @@ func (s *Secret) Duration() time.Duration {
 
 	return dur
 }
+
+func (s *Secret) AuthFactorNames() []string {
+	names := make([]string, 0, len(s.AuthFactors))
+
+	for name := range s.AuthFactors {
+		names = append(names, name)
+	}
+
+	return names
+}

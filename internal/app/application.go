@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/artarts36/potaynik/internal/app/operation/secret/informer"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/prometheus/client_golang/prometheus"
@@ -21,6 +22,7 @@ type Application struct {
 			Handlers struct {
 				SecretCreateHandler *handlers.SecretCreateHandler
 				SecretShowHandler   *handlers.SecretShowHandler
+				SecretInfoHandler   *handlers.SecretInfoHandler
 			}
 		}
 		Repositories struct {
@@ -28,8 +30,9 @@ type Application struct {
 		}
 		Operations struct {
 			Secret struct {
-				Creator *creator.Creator
-				Viewer  *viewer.Viewer
+				Creator  *creator.Creator
+				Viewer   *viewer.Viewer
+				Informer *informer.Informer
 			}
 			Auth struct {
 				Authorizers map[string]auth.Authorizer
@@ -91,7 +94,12 @@ func NewApplication(appName string) (*Application, error) {
 		app.Services.Operations.Auth.Authorizers,
 		app.Metrics.Collectors.SecretViewerMetrics,
 	)
+
 	app.Services.Http.Handlers.SecretShowHandler = handlers.NewSecretShowHandler(app.Services.Operations.Secret.Viewer)
+
+	app.Services.Operations.Secret.Informer = informer.New(app.Services.Repositories.SecretRepository)
+
+	app.Services.Http.Handlers.SecretInfoHandler = handlers.NewSecretInfoHandler(app.Services.Operations.Secret.Informer)
 
 	return app, nil
 }
