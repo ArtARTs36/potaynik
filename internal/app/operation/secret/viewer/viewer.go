@@ -1,15 +1,16 @@
 package viewer
 
 import (
-	"github.com/artarts36/potaynik/internal/app/operation/secret/auth"
 	"github.com/rs/zerolog/log"
 
 	"github.com/artarts36/potaynik/internal/app/entity"
+	"github.com/artarts36/potaynik/internal/app/operation/secret/auth"
 )
 
 type Viewer struct {
 	secrets     Repository
 	authorizers map[string]auth.Authorizer
+	metrics     *Metrics
 }
 
 type Repository interface {
@@ -17,26 +18,32 @@ type Repository interface {
 	Delete(key string)
 }
 
-func New(repository Repository, authorizers map[string]auth.Authorizer) *Viewer {
-	return &Viewer{secrets: repository, authorizers: authorizers}
+func New(repository Repository, authorizers map[string]auth.Authorizer, metrics *Metrics) *Viewer {
+	return &Viewer{secrets: repository, authorizers: authorizers, metrics: metrics}
 }
 
 func (v *Viewer) View(secretKey string, authFactors map[string]string) (string, error) {
+	v.metrics.IncViewTotalAttempts()
+
 	log.Info().Msgf("[SecretViewer] finding secret with key %s", secretKey)
 
 	secret, err := v.secrets.Find(secretKey)
 
 	if err != nil {
+		v.metrics.IncSearchFails()
 		log.Error().Msgf("[SecretViewer] fail on finding secret with key %s: %s", secretKey, err.Error())
 
 		return "", err
 	}
 
 	if secret == nil {
+		v.metrics.IncSecretNotFound()
 		log.Info().Msgf("[SecretViewer] secret with key %s not found", secretKey)
 
 		return "", newSecretNotFoundError(secretKey)
 	}
+
+	v.metrics.IncSecretFound()
 
 	log.Info().Msgf("[SecretViewer] secret with key %s found", secretKey)
 
@@ -70,8 +77,12 @@ func (v *Viewer) authorize(secret *entity.Secret, authFactors map[string]string)
 		}
 
 		if !access.Access {
+			v.metrics.IncAuthPassFail(factorKey)
+
 			return access
 		}
+
+		v.metrics.IncAuthPassOk(factorKey)
 	}
 
 	return auth.Access{

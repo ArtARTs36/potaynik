@@ -2,14 +2,16 @@ package app
 
 import (
 	"fmt"
+
+	"github.com/go-redis/redis/v8"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/vrischmann/envconfig"
+
 	"github.com/artarts36/potaynik/internal/app/operation/secret/auth"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/creator"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/viewer"
 	"github.com/artarts36/potaynik/internal/app/repository"
 	"github.com/artarts36/potaynik/internal/port/http/handlers"
-	"github.com/go-redis/redis/v8"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/vrischmann/envconfig"
 )
 
 type Application struct {
@@ -51,6 +53,7 @@ type Application struct {
 	Metrics struct {
 		Collectors struct {
 			SecretCreatorMetrics *creator.Metrics
+			SecretViewerMetrics  *viewer.Metrics
 		}
 		Registry *prometheus.Registry
 	}
@@ -83,7 +86,11 @@ func NewApplication(appName string) (*Application, error) {
 
 	app.Services.Http.Handlers.SecretCreateHandler = handlers.NewSecretCreateHandler(app.Services.Operations.Secret.Creator)
 
-	app.Services.Operations.Secret.Viewer = viewer.New(app.Services.Repositories.SecretRepository, app.Services.Operations.Auth.Authorizers)
+	app.Services.Operations.Secret.Viewer = viewer.New(
+		app.Services.Repositories.SecretRepository,
+		app.Services.Operations.Auth.Authorizers,
+		app.Metrics.Collectors.SecretViewerMetrics,
+	)
 	app.Services.Http.Handlers.SecretShowHandler = handlers.NewSecretShowHandler(app.Services.Operations.Secret.Viewer)
 
 	return app, nil
@@ -95,10 +102,12 @@ func (app *Application) registerMetrics() {
 	app.Metrics.Registry = prometheus.NewRegistry()
 
 	app.Metrics.Registry.MustRegister(app.Metrics.Collectors.SecretCreatorMetrics.Collectors()...)
+	app.Metrics.Registry.MustRegister(app.Metrics.Collectors.SecretViewerMetrics.Collectors()...)
 }
 
 func (app *Application) spawnMetrics() {
 	app.Metrics.Collectors.SecretCreatorMetrics = creator.NewMetrics(app.AppName)
+	app.Metrics.Collectors.SecretViewerMetrics = viewer.NewMetrics(app.AppName)
 }
 
 func (app *Application) connectRedis() {
