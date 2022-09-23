@@ -13,7 +13,3 @@ type Access struct {
 }
 
 type CreateAuthFactorParams map[string]interface{}
-
-type AuthorizeRequest struct {
-	UserFactorValue string
-}

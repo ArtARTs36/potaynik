@@ -38,7 +38,11 @@ func (h *SecretShowHandler) Handle(r routing.Request) responses.Response {
 		return responses.UnprocessableEntity("invalid secret key")
 	}
 
-	val, err := h.viewer.View(params.SecretKey, params.AuthFactors)
+	val, err := h.viewer.View(viewer.ViewParams{
+		SecretKey:   params.SecretKey,
+		AuthFactors: params.AuthFactors,
+		UserIP:      r.GetUserIP(),
+	})
 
 	notFoundErr, isNotFoundErr := err.(*viewer.SecretNotFoundError)
 

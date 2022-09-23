@@ -35,3 +35,7 @@ func (r *Request) DecodeQuery(str interface{}) error {
 func (r *Request) Context() context.Context {
 	return r.request.Context()
 }
+
+func (r *Request) GetUserIP() string {
+	return r.request.RemoteAddr
+}
