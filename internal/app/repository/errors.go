@@ -12,7 +12,7 @@ func newSecretAlreadyExistsError(secretKey string) *SecretAlreadyExistsError {
 
 func (err *SecretAlreadyExistsError) Error() string {
 	return fmt.Sprintf(
-		"Secret with name %s already exists",
+		"Secret with key %s already exists",
 		err.SecretKey,
 	)
 }
