@@ -81,6 +81,7 @@ func NewApplication(appName string) (*Application, error) {
 	app.Services.Repositories.SecretRepository = repository.NewRedisSecretRepository(app.Services.Redis, fmt.Sprintf("%s_", appName))
 
 	app.Services.Operations.Auth.Authorizers = map[string]auth.Authorizer{
+		auth.IPAuthorizerKey:       &auth.IPAuthorizer{},
 		auth.PasswordAuthorizerKey: &auth.PasswordAuthorizer{},
 	}
 

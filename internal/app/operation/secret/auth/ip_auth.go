@@ -2,10 +2,10 @@ package auth
 
 import (
 	"fmt"
-
 	"github.com/artarts36/potaynik/internal/app/entity"
 )
 
+const IPAuthorizerKey = "ip"
 const ParamsIPKey = "ip"
 
 type IPAuthorizer struct {
@@ -20,7 +20,7 @@ func (auth *IPAuthorizer) CreateAuthFactor(params CreateAuthFactorParams) (entit
 
 	ipString, ipValid := ip.(string)
 
-	if ipValid {
+	if !ipValid {
 		return entity.AuthFactor{}, fmt.Errorf("ip isn't valid")
 	}
 
@@ -49,13 +49,13 @@ func (auth *IPAuthorizer) Authorize(factor entity.AuthFactor, req AuthorizeReque
 		}, nil
 	}
 
-	ip, ipValid := ipVal.(*IP)
+	ip, err := decodeIPFromMap(ipVal)
 
-	if ipValid {
+	if err != nil {
 		return Access{
 			Access: false,
 			Reason: "ip not defined",
-		}, nil
+		}, err
 	}
 
 	return Access{

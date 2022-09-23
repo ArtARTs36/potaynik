@@ -1,6 +1,10 @@
 package auth
 
-import "net"
+import (
+	"net"
+
+	"github.com/mitchellh/mapstructure"
+)
 
 const (
 	ipTypeAddress = iota
@@ -8,8 +12,20 @@ const (
 )
 
 type IP struct {
-	Value string `json:"value"`
-	Type  int    `json:"type"`
+	Value string `json:"value" mapstructure:"value"`
+	Type  int    `json:"type" mapstructure:"type"`
+}
+
+func decodeIPFromMap(data interface{}) (*IP, error) {
+	var ip *IP
+
+	err := mapstructure.Decode(data, &ip)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ip, nil
 }
 
 func newIP(address string) (*IP, error) {
