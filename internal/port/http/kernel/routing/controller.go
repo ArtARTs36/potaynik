@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
@@ -52,7 +53,7 @@ func (c *Controller) Serve(port int) error {
 	server := &http.Server{
 		Addr:              fmt.Sprintf(":%d", port),
 		Handler:           mux,
-		ReadHeaderTimeout: 5,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
 	chErr := make(chan error)
