@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/artarts36/potaynik/internal/app/entity"
+
 	"github.com/go-redis/redis/v8"
+
+	"github.com/artarts36/potaynik/internal/app/entity"
 )
 
 type RedisSecretRepository struct {
@@ -18,7 +20,7 @@ func NewRedisSecretRepository(redis *redis.Client, prefix string) *RedisSecretRe
 }
 
 func (repo *RedisSecretRepository) Add(secret *entity.Secret) error {
-	secretJson, err := json.Marshal(secret)
+	secretJSON, err := json.Marshal(secret)
 
 	if err != nil {
 		return err
@@ -27,7 +29,7 @@ func (repo *RedisSecretRepository) Add(secret *entity.Secret) error {
 	return repo.redis.Set(
 		context.Background(),
 		repo.createKey(secret.Key),
-		secretJson,
+		secretJSON,
 		secret.Duration(),
 	).Err()
 }

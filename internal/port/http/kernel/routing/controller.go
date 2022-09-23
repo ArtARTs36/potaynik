@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/rs/zerolog"
 	"net/http"
 
+	"github.com/google/uuid"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
@@ -50,8 +50,9 @@ func (c *Controller) Serve(port int) error {
 	mux.HandleFunc("/", c.HandleRequest)
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
-		Handler: mux,
+		Addr:              fmt.Sprintf(":%d", port),
+		Handler:           mux,
+		ReadHeaderTimeout: 5,
 	}
 
 	chErr := make(chan error)

@@ -1,16 +1,16 @@
 package routing
 
 type Router struct {
-	handlers map[string]map[string]GoHttpHandler
+	handlers map[string]map[string]GoHTTPHandler
 }
 
 func NewRouter() *Router {
-	return &Router{handlers: map[string]map[string]GoHttpHandler{}}
+	return &Router{handlers: map[string]map[string]GoHTTPHandler{}}
 }
 
-func (r *Router) AddGoHandler(uri string, method string, handler GoHttpHandler) *Router {
+func (r *Router) AddGoHandler(uri string, method string, handler GoHTTPHandler) *Router {
 	if _, exists := r.handlers[uri]; !exists {
-		r.handlers[uri] = map[string]GoHttpHandler{}
+		r.handlers[uri] = map[string]GoHTTPHandler{}
 	}
 
 	r.handlers[uri][method] = handler
@@ -23,7 +23,7 @@ func (r *Router) AddAppHandler(uri string, method string, handler AppHandler) *R
 	return r.AddGoHandler(uri, method, WrapHandler(handler))
 }
 
-func (r *Router) Find(uri string, method string) GoHttpHandler {
+func (r *Router) Find(uri string, method string) GoHTTPHandler {
 	uriHandlers, exists := r.handlers[uri]
 
 	if !exists {

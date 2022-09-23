@@ -31,6 +31,7 @@ func (repo *MemorySecretRepository) Add(secret *entity.Secret) error {
 	return nil
 }
 
+//nolint:unparam
 func (repo *MemorySecretRepository) Find(secretKey string) (*entity.Secret, error) {
 	secret, exists := repo.secrets[secretKey]
 
@@ -38,6 +39,7 @@ func (repo *MemorySecretRepository) Find(secretKey string) (*entity.Secret, erro
 		return nil, nil
 	}
 
+	//nolint:gosimple
 	currTimeDur := time.Now().Sub(repo.secretsDates[secretKey])
 
 	if currTimeDur.Seconds() > float64(secret.TTL) {

@@ -1,13 +1,14 @@
 package routing
 
 import (
-	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 	"net/http"
 	"strings"
+
+	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 )
 
 type OptionsHandler struct {
-	routes      *map[string]GoHttpHandler
+	routes      *map[string]GoHTTPHandler
 	headerValue *string
 }
 
@@ -29,7 +30,7 @@ func (h *OptionsHandler) retrieveHeaderValue() {
 
 	methods := make([]string, 0, len(*h.routes))
 
-	for method, _ := range *h.routes {
+	for method := range *h.routes {
 		methods = append(methods, method)
 	}
 

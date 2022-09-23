@@ -2,11 +2,11 @@ package creator
 
 import (
 	"fmt"
-	"github.com/artarts36/potaynik/internal/app/operation/secret/auth"
 
 	"github.com/rs/zerolog/log"
 
 	"github.com/artarts36/potaynik/internal/app/entity"
+	"github.com/artarts36/potaynik/internal/app/operation/secret/auth"
 )
 
 type Creator struct {

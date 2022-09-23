@@ -2,15 +2,15 @@ package app
 
 import (
 	"fmt"
-	"github.com/artarts36/potaynik/internal/app/operation/health"
-	"github.com/artarts36/potaynik/internal/app/operation/secret/informer"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/vrischmann/envconfig"
 
+	"github.com/artarts36/potaynik/internal/app/operation/health"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/auth"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/creator"
+	"github.com/artarts36/potaynik/internal/app/operation/secret/informer"
 	"github.com/artarts36/potaynik/internal/app/operation/secret/viewer"
 	"github.com/artarts36/potaynik/internal/app/repository"
 	"github.com/artarts36/potaynik/internal/port/http/handlers"
@@ -19,7 +19,7 @@ import (
 type Application struct {
 	AppName  string
 	Services struct {
-		Http struct {
+		HTTP struct {
 			Handlers struct {
 				SecretCreateHandler *handlers.SecretCreateHandler
 				SecretShowHandler   *handlers.SecretShowHandler
@@ -44,7 +44,7 @@ type Application struct {
 		Redis          *redis.Client
 	}
 	Environment struct {
-		Http struct {
+		HTTP struct {
 			Public struct {
 				Port int
 			}
@@ -90,7 +90,7 @@ func NewApplication(appName string) (*Application, error) {
 		app.Metrics.Collectors.SecretCreatorMetrics,
 	)
 
-	app.Services.Http.Handlers.SecretCreateHandler = handlers.NewSecretCreateHandler(app.Services.Operations.Secret.Creator)
+	app.Services.HTTP.Handlers.SecretCreateHandler = handlers.NewSecretCreateHandler(app.Services.Operations.Secret.Creator)
 
 	app.Services.Operations.Secret.Viewer = viewer.New(
 		app.Services.Repositories.SecretRepository,
@@ -98,13 +98,13 @@ func NewApplication(appName string) (*Application, error) {
 		app.Metrics.Collectors.SecretViewerMetrics,
 	)
 
-	app.Services.Http.Handlers.SecretShowHandler = handlers.NewSecretShowHandler(app.Services.Operations.Secret.Viewer)
+	app.Services.HTTP.Handlers.SecretShowHandler = handlers.NewSecretShowHandler(app.Services.Operations.Secret.Viewer)
 
 	app.Services.Operations.Secret.Informer = informer.New(app.Services.Repositories.SecretRepository)
 
-	app.Services.Http.Handlers.SecretInfoHandler = handlers.NewSecretInfoHandler(app.Services.Operations.Secret.Informer)
+	app.Services.HTTP.Handlers.SecretInfoHandler = handlers.NewSecretInfoHandler(app.Services.Operations.Secret.Informer)
 
-	app.Services.Http.Handlers.HealthCheckHandler = handlers.NewHealthCheckHandler(app.Services.HealthCheckers)
+	app.Services.HTTP.Handlers.HealthCheckHandler = handlers.NewHealthCheckHandler(app.Services.HealthCheckers)
 
 	return app, nil
 }

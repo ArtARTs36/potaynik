@@ -1,23 +1,24 @@
 package routing
 
 import (
-	"github.com/rs/zerolog/log"
 	"net/http"
+
+	"github.com/rs/zerolog/log"
 )
 
 const defaultContentType = "application/json"
 
-type HttpHandlerWrapper struct {
+type HTTPHandlerWrapper struct {
 	handler AppHandler
 }
 
-func WrapHandler(handler AppHandler) GoHttpHandler {
-	wrapper := HttpHandlerWrapper{handler: handler}
+func WrapHandler(handler AppHandler) GoHTTPHandler {
+	wrapper := HTTPHandlerWrapper{handler: handler}
 
 	return wrapper.Handle
 }
 
-func (r *HttpHandlerWrapper) Handle(writer http.ResponseWriter, request *http.Request) {
+func (r *HTTPHandlerWrapper) Handle(writer http.ResponseWriter, request *http.Request) {
 	resp := r.handler(NewRequest(request))
 
 	writer.Header().Set("Content-Type", defaultContentType)
@@ -25,6 +26,6 @@ func (r *HttpHandlerWrapper) Handle(writer http.ResponseWriter, request *http.Re
 	_, err := writer.Write(resp.Message)
 
 	if err != nil {
-		log.Error().Msgf("[Http][HandlerWrapper] Error on response writing: %v", err)
+		log.Error().Msgf("[HTTP][HandlerWrapper] Error on response writing: %v", err)
 	}
 }

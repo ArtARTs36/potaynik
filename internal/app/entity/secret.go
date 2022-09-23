@@ -17,7 +17,7 @@ func (s *Secret) HasAuthFactors() bool {
 }
 
 func (s *Secret) Duration() time.Duration {
-	dur, _ := time.ParseDuration(fmt.Sprintf("%ss", s.TTL))
+	dur, _ := time.ParseDuration(fmt.Sprintf("%ds", s.TTL))
 
 	return dur
 }

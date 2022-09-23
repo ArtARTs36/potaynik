@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/artarts36/potaynik/internal/app"
-	"github.com/artarts36/potaynik/internal/port/http/kernel/routing"
+	"sync"
+
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
-	"sync"
+
+	"github.com/artarts36/potaynik/internal/app"
+	"github.com/artarts36/potaynik/internal/port/http/kernel/routing"
 )
 
 type serverRunner func(application *app.Application) error
@@ -45,11 +47,11 @@ func main() {
 func runApplicationServer(application *app.Application) error {
 	return routing.NewController(func(router *routing.Router) {
 		router.
-			AddAppHandler("/api/secrets/add", "POST", application.Services.Http.Handlers.SecretCreateHandler.Handle).
-			AddAppHandler("/api/secrets/show", "GET", application.Services.Http.Handlers.SecretShowHandler.Handle).
-			AddAppHandler("/api/secrets/info", "GET", application.Services.Http.Handlers.SecretInfoHandler.Handle)
+			AddAppHandler("/api/secrets/add", "POST", application.Services.HTTP.Handlers.SecretCreateHandler.Handle).
+			AddAppHandler("/api/secrets/show", "GET", application.Services.HTTP.Handlers.SecretShowHandler.Handle).
+			AddAppHandler("/api/secrets/info", "GET", application.Services.HTTP.Handlers.SecretInfoHandler.Handle)
 	}).
-		Serve(application.Environment.Http.Public.Port)
+		Serve(application.Environment.HTTP.Public.Port)
 }
 
 func runHealthServer(application *app.Application) error {
@@ -60,7 +62,7 @@ func runHealthServer(application *app.Application) error {
 				promhttp.HandlerOpts{
 					EnableOpenMetrics: true,
 				}).ServeHTTP).
-			AddAppHandler("/health/check", "GET", application.Services.Http.Handlers.HealthCheckHandler.Handle)
+			AddAppHandler("/health/check", "GET", application.Services.HTTP.Handlers.HealthCheckHandler.Handle)
 	}).
-		Serve(application.Environment.Http.Health.Port)
+		Serve(application.Environment.HTTP.Health.Port)
 }

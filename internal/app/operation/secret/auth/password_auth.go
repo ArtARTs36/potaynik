@@ -27,6 +27,7 @@ func (auth *PasswordAuthorizer) CreateAuthFactor(params CreateAuthFactorParams) 
 	}, nil
 }
 
+//nolint:unparam
 func (auth *PasswordAuthorizer) Authorize(factor entity.AuthFactor, req AuthorizeRequest) (Access, error) {
 	pswd, exists := factor.Params[ParamsPasswordKey]
 

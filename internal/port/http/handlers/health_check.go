@@ -40,15 +40,15 @@ func (h *HealthCheckHandler) Handle(r routing.Request) responses.Response {
 		})
 	}
 
-	respJson, err := json.Marshal(response)
+	respJSON, err := json.Marshal(response)
 
 	if err != nil {
 		return responses.ServerError(err.Error())
 	}
 
 	if response.Status {
-		return responses.OK(respJson)
+		return responses.OK(respJSON)
 	}
 
-	return responses.ServerErrorFromBytes(respJson)
+	return responses.ServerErrorFromBytes(respJSON)
 }

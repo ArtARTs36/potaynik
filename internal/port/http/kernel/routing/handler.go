@@ -1,10 +1,11 @@
 package routing
 
 import (
-	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 	"net/http"
+
+	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 )
 
 type AppHandler func(Request) responses.Response
 
-type GoHttpHandler func(writer http.ResponseWriter, request *http.Request)
+type GoHTTPHandler func(writer http.ResponseWriter, request *http.Request)

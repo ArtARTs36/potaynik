@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+
 	"github.com/artarts36/potaynik/internal/app/operation/secret/viewer"
 	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 	"github.com/artarts36/potaynik/internal/port/http/kernel/routing"

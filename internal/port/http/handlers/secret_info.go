@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+
+	"github.com/rs/zerolog/log"
+
 	"github.com/artarts36/potaynik/internal/app/operation/secret/informer"
 	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 	"github.com/artarts36/potaynik/internal/port/http/kernel/routing"
-	"github.com/rs/zerolog/log"
 )
 
 type SecretInfoHandler struct {
@@ -32,9 +34,9 @@ func (h *SecretInfoHandler) Handle(r routing.Request) responses.Response {
 	info, err := h.informer.Info(params.SecretKey)
 
 	if err == nil {
-		infoJson, _ := json.Marshal(info)
+		infoJSON, _ := json.Marshal(info)
 
-		return responses.OK(infoJson)
+		return responses.OK(infoJSON)
 	}
 
 	notFoundErr, isNotFoundErr := err.(*informer.SecretNotFoundError)

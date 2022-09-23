@@ -1,16 +1,17 @@
 package routing
 
 import (
-	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 	"net/http"
 	"strings"
+
+	"github.com/artarts36/potaynik/internal/port/http/kernel/responses"
 )
 
 type MethodNotAllowedHandler struct {
-	routes map[string]GoHttpHandler
+	routes map[string]GoHTTPHandler
 }
 
-func newMethodNotAllowedHandler(routes map[string]GoHttpHandler) MethodNotAllowedHandler {
+func newMethodNotAllowedHandler(routes map[string]GoHTTPHandler) MethodNotAllowedHandler {
 	return MethodNotAllowedHandler{routes: routes}
 }
 
@@ -26,7 +27,7 @@ func (h *MethodNotAllowedHandler) Handle(_ Request) responses.Response {
 func (h *MethodNotAllowedHandler) buildHeaderValue() string {
 	methods := make([]string, 0, len(h.routes))
 
-	for method, _ := range h.routes {
+	for method := range h.routes {
 		methods = append(methods, method)
 	}
 
