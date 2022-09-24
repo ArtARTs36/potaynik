@@ -29,6 +29,12 @@ func NewControllerWithRouter(router *Router) *Controller {
 }
 
 func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Request) {
+	defer func() {
+		log.Error().Msg("[Controller] handling request was faileadd")
+
+		recover()
+	}()
+
 	var rootLogCtx zerolog.Context
 
 	log.Logger.UpdateContext(func(c zerolog.Context) zerolog.Context {
