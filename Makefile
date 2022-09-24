@@ -13,8 +13,9 @@ run:
 docker-run:
 	docker-compose -f build/dev/docker-compose.yml up
 
-docker-create-network:
+init:
 	docker network create potaynik-net
+	docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
 
 deps:
 	go mod tidy

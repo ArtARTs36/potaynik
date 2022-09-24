@@ -9,7 +9,7 @@
 * Docker/docker-compose
 
 ## Установка & Запуск
-1. Выполнить `make docker-create-network`
+1. Выполнить `make init`
 2. Запустить: `make run`
 
 ## Dev console
