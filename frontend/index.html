@@ -1,0 +1,87 @@
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://preview.colorlib.com/theme/bootstrap/signup-form-02/css/bootstrap.min.css">
+    <link rel="stylesheet" href="index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+
+<div id="app">
+    <div class="d-lg-flex half">
+        <div class="bg order-1 order-md-2" style="background-image:url(https://preview.colorlib.com/theme/bootstrap/signup-form-02/images/xbg_1.jpg.pagespeed.ic.R5QWIA8_nZ.webp)"></div>
+        <div class="contents order-2 order-md-1">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-7 py-5">
+                        <h3>Создать секрет</h3>
+                        <p class="mb-4">Lorem ipsum dolor sit amet elit. Sapiente sit aut eos consectetur adipisicing.</p>
+                        <form action="#" method="post">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group first">
+                                        <label for="secret-value">Секрет</label>
+                                        <input v-model="new_secret.value" class="form-control" placeholder="my secret value" id="secret-value">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group first">
+                                        <label for="ttl">TTL. В минутах</label>
+                                        <input v-model="new_secret.ttl" type="number" class="form-control" placeholder="60" id="ttl">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="options">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="options-title" @click="toggleShowOptions">
+                                                Авторизация. Необязательно
+
+                                                <span v-if="show_options_enabled" class="option-title-action">
+                                                    ^
+                                                </span>
+                                                <span v-else class="option-title-action">
+                                                    v
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="options-form" v-if="show_options_enabled">
+                                    <div v-for="options in arrayChunk(secret_create_options, 2)">
+                                        <div class="row">
+                                            <div class="col-md-6" v-for="option in options">
+                                                <div class="form-group first">
+                                                    <label>{{ option.label }}</label>
+                                                    <input type="text" class="form-control" :placeholder=option.example>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group first">
+                                        <input type="submit" value="Сохранить" class="btn px-5 btn-success">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="index.js"></script>
+</body>
+</html>
