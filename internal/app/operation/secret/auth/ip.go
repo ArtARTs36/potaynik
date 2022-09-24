@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"fmt"
+	"github.com/rs/zerolog/log"
 	"net"
 
 	"github.com/mitchellh/mapstructure"
@@ -29,11 +31,11 @@ func decodeIPFromMap(data interface{}) (*IP, error) {
 }
 
 func newIP(address string) (*IP, error) {
-	netIp, _, err := net.ParseCIDR(address)
+	netIp, network, err := net.ParseCIDR(address)
 
 	if err == nil {
 		return &IP{
-			Value: netIp.String(),
+			Value: network.String(),
 			Type:  ipTypeNetwork,
 		}, nil
 	}
@@ -56,7 +58,15 @@ func (ip *IP) Contains(addr string) bool {
 		return selfNetIP.Equal(thatNetIP)
 	}
 
-	_, network, _ := net.ParseCIDR(ip.Value)
+	_, network, err := net.ParseCIDR(ip.Value)
+
+	fmt.Println(net.ParseCIDR(ip.Value))
+
+	if err != nil {
+		log.Warn().Msg(err.Error())
+
+		return false
+	}
 
 	return network.Contains(thatNetIP)
 }

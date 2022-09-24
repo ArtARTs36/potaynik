@@ -37,5 +37,11 @@ func (r *Request) Context() context.Context {
 }
 
 func (r *Request) GetUserIP() string {
+	forwarded := r.request.Header.Get("X-Forwarded-For")
+
+	if len(forwarded) > 0 {
+		return forwarded
+	}
+
 	return r.request.RemoteAddr
 }
