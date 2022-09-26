@@ -17,6 +17,10 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets: ['potaynik-backend:8081']
+  - job_name: node
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['potaynik-node-exporter:9100']
 
 alerting:
   alertmanagers:

@@ -11,7 +11,10 @@ run:
 	go run cmd/main.go
 
 docker-run:
-	docker-compose -f build/dev/docker-compose.yml up
+	COMPOSE_HTTP_TIMEOUT=120 docker-compose -f build/dev/docker-compose.yml up
+
+docker-down:
+	COMPOSE_HTTP_TIMEOUT=120 docker-compose -f build/dev/docker-compose.yml down
 
 init:
 	docker network create potaynik-net

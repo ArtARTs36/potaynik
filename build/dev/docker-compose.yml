@@ -1,4 +1,4 @@
-version: '3.2'
+version: '3.4'
 
 services:
   nginx-proxy:
@@ -112,6 +112,22 @@ services:
     labels:
       org.label-schema.group: "monitoring"
 
+  potaynik-node-exporter:
+    image: prom/node-exporter:v1.3.1
+    command:
+      - '--path.rootfs=/host'
+    restart: unless-stopped
+    expose:
+      - 9100
+    networks:
+      - monitor-net
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    labels:
+      org.label-schema.group: "monitoring"
+
 networks:
   potaynik-net:
     external: true
@@ -121,3 +137,4 @@ networks:
 volumes:
   prometheus_data: {}
   grafana_data: {}
+
