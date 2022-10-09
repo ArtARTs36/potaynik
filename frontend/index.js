@@ -35,6 +35,9 @@ var app = new Vue({
         toggleShowOptions() {
             this.show_options_enabled = !this.show_options_enabled
         },
+        createSecret() {
+
+        }
     }
 });
 
