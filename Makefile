@@ -10,8 +10,14 @@ lint:
 run:
 	go run cmd/main.go
 
+docker-run-frontend:
+	COMPOSE_HTTP_TIMEOUT=120 docker-compose -f build/dev/docker-compose.yml up potaynik-frontend
+
 docker-run:
 	COMPOSE_HTTP_TIMEOUT=120 docker-compose -f build/dev/docker-compose.yml up
+
+docker-run-nginx-proxy:
+	COMPOSE_HTTP_TIMEOUT=120 docker-compose -f build/dev/docker-compose.yml up nginx-proxy --force-recreate
 
 docker-down:
 	COMPOSE_HTTP_TIMEOUT=120 docker-compose -f build/dev/docker-compose.yml down

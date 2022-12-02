@@ -39,6 +39,19 @@ services:
         loki-url: http://localhost:3100/loki/api/v1/push
         loki-external-labels: job=dockerlogs,service_name=potaynik-backend
 
+  potaynik-frontend:
+    depends_on:
+      - nginx-proxy
+    build:
+      dockerfile: ./build/dev/frontend/Dockerfile
+      context: "${PWD}"
+    environment:
+      - VIRTUAL_HOST=potaynik.ru
+    networks:
+      - potaynik-net
+    volumes:
+      - "${PWD}/frontend/:/app/"
+
   potaynik-redis:
     image: bitnami/redis:7.0.4
     environment:
