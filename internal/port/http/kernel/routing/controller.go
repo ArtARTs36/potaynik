@@ -37,6 +37,10 @@ func (c *Controller) HandleRequest(writer http.ResponseWriter, request *http.Req
 
 	var rootLogCtx zerolog.Context
 
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE")
+	writer.Header().Set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+
 	log.Logger.UpdateContext(func(c zerolog.Context) zerolog.Context {
 		rootLogCtx = c
 
