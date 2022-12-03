@@ -3,6 +3,8 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="index.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
     <script src="js/vue.js"></script>
 </head>
 <body>
@@ -15,8 +17,10 @@
                 <div class="row justify-content-center">
                     <div class="col-md-7 py-5">
                         <h3>Создать секрет</h3>
-                        <p class="mb-4">Lorem ipsum dolor sit amet elit. Sapiente sit aut eos consectetur adipisicing.</p>
-                        <form action="#" method="post">
+                        <p class="mb-4">
+                            //
+                        </p>
+                        <form onsubmit="return false;" method="post">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group first">
@@ -70,7 +74,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group first">
-                                        <input type="submit" value="Сохранить" class="btn px-5 btn-success">
+                                        <input type="submit" value="Сохранить" class="btn px-5 btn-success" @click="createSecret">
                                     </div>
                                 </div>
                             </div>

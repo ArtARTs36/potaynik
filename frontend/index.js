@@ -19,7 +19,7 @@ var app = new Vue({
         new_secret: {
             value: null,
             ttl: 60,
-            auth_factors: [],
+            auth_factors: new Map(),
         },
     },
     methods: {
@@ -36,8 +36,19 @@ var app = new Vue({
             this.show_options_enabled = !this.show_options_enabled
         },
         createSecret() {
+            console.log(`try to create secret, uses ${this.new_secret.auth_factors.length} auth factors`)
 
-        }
+            let newSecret = {
+                "value": this.new_secret.value,
+                "ttl": this.new_secret.ttl,
+            }
+
+            if (this.new_secret.auth_factors.length > 0) {
+                newSecret.auth_factors = this.new_secret.auth_factors;
+            }
+
+            axios.post('http://api.potaynik.ru/api/secrets/add', newSecret)
+        },
     }
 });
 
